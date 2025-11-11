@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="da">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kommatræning - 7 regler</title>
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body>
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { useState } = React;
+
+        const CheckIcon = () => (
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <polyline points="20 6 9 17 4 12"></polyline>
+            </svg>
+        );
+
+        const XIcon = () => (
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <line x1="18" y1="6" x2="6" y2="18"></line>
+                <line x1="6" y1="6" x2="18" y2="18"></line>
+            </svg>
+        );
+
+        const RefreshIcon = () => (
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <polyline points="23 4 23 10 17 10"></polyline>
+                <polyline points="1 20 1 14 7 14"></polyline>
+                <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path>
+            </svg>
+        );
+
+        const CommaTrainer = () => {
+            const [currentRule, setCurrentRule] = useState(1);
+            const [score, setScore] = useState(0);
+            const [attempts, setAttempts] = useState(0);
+            const [feedback, setFeedback] = useState('');
+            const [currentExercise, setCurrentExercise] = useState(0);
+
+            const exercises = {
+                1: [
+                    { text: "Hun sagde at hun var træt", correct: "Hun sagde, at hun var træt", needsComma: true },
+                    { text: "Det er svært at lære at sætte komma", correct: "Det er svært at lære at sætte komma", needsComma: false },
+                    { text: "Jeg tror at det bliver godt", correct: "Jeg tror, at det bliver godt", needsComma: true },
+                    { text: "Han prøvede at finde en løsning", correct: "Han prøvede at finde en løsning", needsComma: false },
+                ],
+                2: [
+                    { text: "Det er dyrt men godt", correct: "Det er dyrt, men godt", needsComma: true },
+                    { text: "Han ville gerne men havde ikke tid", correct: "Han ville gerne, men havde ikke tid", needsComma: true },
+                    { text: "Jeg kom men jeg gik igen", correct: "Jeg kom, men jeg gik igen", needsComma: true },
+                ],
+                3: [
+                    { text: "Bilen som står derude er min", correct: "Bilen, som står derude, er min", needsComma: true },
+                    { text: "Folk der bor i byen er heldige", correct: "Folk, der bor i byen, er heldige", needsComma: true },
+                    { text: "Hun er smuk som en rose", correct: "Hun er smuk som en rose", needsComma: false },
+                ],
+                4: [
+                    { text: "Vi købte brød ost pålæg og mælk", correct: "Vi købte brød, ost, pålæg og mælk", needsComma: true },
+                    { text: "Han er høj mørk og charmerende", correct: "Han er høj, mørk og charmerende", needsComma: true },
+                    { text: "Jeg har besøgt Paris London og Rom", correct: "Jeg har besøgt Paris, London og Rom", needsComma: true },
+                ],
+                5: [
+                    { text: "Kom her og hjælp mig", correct: "Kom her, og hjælp mig", needsComma: true },
+                    { text: "Gå ind lav lektier og sov tidligt", correct: "Gå ind, lav lektier, og sov tidligt", needsComma: true },
+                    { text: "Husk at låse døren", correct: "Husk at låse døren", needsComma: false },
+                ],
+                6: [
+                    { text: "Jeg ved ikke hvem der kommer", correct: "Jeg ved ikke, hvem der kommer", needsComma: true },
+                    { text: "Han spurgte hvorfor vi var der", correct: "Han spurgte, hvorfor vi var der", needsComma: true },
+                    { text: "Det sker uanset hvad du gør", correct: "Det sker, uanset hvad du gør", needsComma: true },
+                ],
+                7: [
+                    { text: "Hovedstaden København ligger på Sjælland", correct: "Hovedstaden, København, ligger på Sjælland", needsComma: true },
+                    { text: "Han er som du ved meget dygtig", correct: "Han er, som du ved, meget dygtig", needsComma: true },
+                    { text: "Du kommer vel ikke", correct: "Du kommer, vel, ikke", needsComma: true },
+                ],
+            };
+
+            const ruleDescriptions = {
+                1: "Komma foran 'at' - medmindre der følger et udsagnsord",
+                2: "Komma foran 'men' - altid!",
+                3: "Komma foran 'som' og 'der' - når de kan udskiftes",
+                4: "Komma i opremsninger - mellem led (ikke før sidste)",
+                5: "Komma foran imperativ - bydemåde (gå, kom, spis)",
+                6: "Komma foran hv-ord - hvem, hvad, hvorfor osv.",
+                7: "Komma omkring tilføjelser - supplerende info",
+            };
+
+            const checkAnswer = (needsComma) => {
+                const exercise = exercises[currentRule][currentExercise];
+                const correct = needsComma === exercise.needsComma;
+                
+                setAttempts(attempts + 1);
+                if (correct) {
+                    setScore(score + 1);
+                    setFeedback(`✓ Korrekt! "${exercise.correct}"`);
+                } else {
+                    setFeedback(`✗ Forkert. Korrekt: "${exercise.correct}"`);
+                }
+                
+                setTimeout(() => {
+                    if (currentExercise < exercises[currentRule].length - 1) {
+                        setCurrentExercise(currentExercise + 1);
+                        setFeedback('');
+                    } else {
+                        setFeedback('Du har gennemført alle øvelser for denne regel!');
+                    }
+                }, 2500);
+            };
+
+            const changeRule = (rule) => {
+                setCurrentRule(rule);
+                setCurrentExercise(0);
+                setFeedback('');
+            };
+
+            const reset = () => {
+                setCurrentExercise(0);
+                setScore(0);
+                setAttempts(0);
+                setFeedback('');
+            };
+
+            const currentEx = exercises[currentRule][currentExercise];
+            const isDone = currentExercise >= exercises[currentRule].length;
+
+            return (
+                <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 p-6">
+                    <div className="max-w-3xl mx-auto">
+                        <div className="bg-white rounded-lg shadow-lg p-8 mb-6">
+                            <h1 className="text-3xl font-bold text-indigo-900 mb-2">Kommatræning</h1>
+                            <p className="text-gray-600 mb-4">Træn de 7 vigtigste kommaregler</p>
+                            
+                            <div className="flex items-center justify-between mb-6 p-4 bg-indigo-50 rounded-lg">
+                                <div className="text-sm">
+                                    <span className="font-semibold text-indigo-900">Score:</span>
+                                    <span className="ml-2 text-lg font-bold text-indigo-600">
+                                        {score}/{attempts}
+                                    </span>
+                                </div>
+                                <button
+                                    onClick={reset}
+                                    className="flex items-center gap-2 px-4 py-2 bg-white border border-indigo-200 rounded-lg hover:bg-indigo-50 transition"
+                                >
+                                    <RefreshIcon />
+                                    Nulstil
+                                </button>
+                            </div>
+
+                            <div className="mb-6">
+                                <h3 className="text-sm font-semibold text-gray-700 mb-3">Vælg regel at træne:</h3>
+                                <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
+                                    {[1, 2, 3, 4, 5, 6, 7].map((rule) => (
+                                        <button
+                                            key={rule}
+                                            onClick={() => changeRule(rule)}
+                                            className={`px-4 py-3 rounded-lg font-medium transition ${
+                                                currentRule === rule
+                                                    ? 'bg-indigo-600 text-white'
+                                                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                                            }`}
+                                        >
+                                            Regel {rule}
+                                        </button>
+                                    ))}
+                                </div>
+                            </div>
+
+                            <div className="bg-gray-50 rounded-lg p-4 mb-6">
+                                <h3 className="font-semibold text-indigo-900 mb-1">Regel {currentRule}</h3>
+                                <p className="text-sm text-gray-700">{ruleDescriptions[currentRule]}</p>
+                            </div>
+                        </div>
+
+                        {!isDone && currentEx && (
+                            <div className="bg-white rounded-lg shadow-lg p-8">
+                                <div className="mb-4">
+                                    <span className="text-sm text-gray-500">
+                                        Opgave {currentExercise + 1} af {exercises[currentRule].length}
+                                    </span>
+                                </div>
+
+                                <div className="mb-8">
+                                    <p className="text-xl text-gray-800 leading-relaxed bg-yellow-50 p-6 rounded-lg border-l-4 border-yellow-400">
+                                        {currentEx.text}
+                                    </p>
+                                </div>
+
+                                <div className="mb-6">
+                                    <p className="text-lg font-medium text-gray-700 mb-4">
+                                        Skal der sættes komma i denne sætning?
+                                    </p>
+                                    <div className="flex gap-4">
+                                        <button
+                                            onClick={() => checkAnswer(true)}
+                                            className="flex-1 flex items-center justify-center gap-2 px-6 py-4 bg-green-500 text-white rounded-lg hover:bg-green-600 transition font-medium text-lg"
+                                        >
+                                            <CheckIcon />
+                                            Ja, der skal komma
+                                        </button>
+                                        <button
+                                            onClick={() => checkAnswer(false)}
+                                            className="flex-1 flex items-center justify-center gap-2 px-6 py-4 bg-red-500 text-white rounded-lg hover:bg-red-600 transition font-medium text-lg"
+                                        >
+                                            <XIcon />
+                                            Nej, intet komma
+                                        </button>
+                                    </div>
+                                </div>
+
+                                {feedback && (
+                                    <div className={`p-4 rounded-lg ${
+                                        feedback.includes('Korrekt') 
+                                            ? 'bg-green-100 text-green-800 border border-green-300' 
+                                            : feedback.includes('Forkert')
+                                            ? 'bg-red-100 text-red-800 border border-red-300'
+                                            : 'bg-blue-100 text-blue-800 border border-blue-300'
+                                    }`}>
+                                        <p className="font-medium">{feedback}</p>
+                                    </div>
+                                )}
+                            </div>
+                        )}
+
+                        {isDone && (
+                            <div className="bg-white rounded-lg shadow-lg p-8 text-center">
+                                <h2 className="text-2xl font-bold text-indigo-900 mb-4">
+                                    Godt klaret!
+                                </h2>
+                                <p className="text-gray-700 mb-6">
+                                    Du har gennemført alle øvelser for regel {currentRule}.
+                                </p>
+                                <p className="text-lg mb-6">
+                                    Din score: <span className="font-bold text-indigo-600">{score}/{attempts}</span>
+                                </p>
+                                <button
+                                    onClick={() => {
+                                        setCurrentExercise(0);
+                                        setFeedback('');
+                                    }}
+                                    className="px-6 py-3 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition font-medium"
+                                >
+                                    Træn igen
+                                </button>
+                            </div>
+                        )}
+                    </div>
+                </div>
+            );
+        };
+
+        ReactDOM.render(<CommaTrainer />, document.getElementById('root'));
+    </script>
+</body>
+</html>
