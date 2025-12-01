@@ -42,6 +42,7 @@
             const [attempts, setAttempts] = useState(0);
             const [feedback, setFeedback] = useState('');
             const [currentExercise, setCurrentExercise] = useState(0);
+            const [sampledExercises, setSampledExercises] = useState([]);
 
             const exercises = {
                 1: [
@@ -200,6 +201,27 @@
                     { text: "Hovedstaden København ligger på Sjælland", correct: "Hovedstaden, København, ligger på Sjælland", needsComma: true },
                     { text: "Han er som du ved meget dygtig", correct: "Han er, som du ved, meget dygtig", needsComma: true },
                     { text: "Du kommer vel ikke", correct: "Du kommer, vel, ikke", needsComma: true },
+                    { text: "Min bror Peter bor i Aarhus", correct: "Min bror, Peter, bor i Aarhus", needsComma: true },
+                    { text: "Dronningen af Danmark bor på slottet", correct: "Dronningen af Danmark bor på slottet", needsComma: false },
+                    { text: "Hun er som sagt meget talentfuld", correct: "Hun er, som sagt, meget talentfuld", needsComma: true },
+                    { text: "Forfatteren Hans Christian Andersen er verdensberømt", correct: "Forfatteren, Hans Christian Andersen, er verdensberømt", needsComma: true },
+                    { text: "Præsidenten i USA holder tale i dag", correct: "Præsidenten i USA holder tale i dag", needsComma: false },
+                    { text: "Vi skal efter min mening vente lidt", correct: "Vi skal, efter min mening, vente lidt", needsComma: true },
+                    { text: "Hendes søn den ældste studerer medicin", correct: "Hendes søn, den ældste, studerer medicin", needsComma: true },
+                    { text: "Kongen af Sverige besøger Danmark", correct: "Kongen af Sverige besøger Danmark", needsComma: false },
+                    { text: "Det er som bekendt ikke let", correct: "Det er, som bekendt, ikke let", needsComma: true },
+                    { text: "Vores nabo fru Jensen er syg", correct: "Vores nabo, fru Jensen, er syg", needsComma: true },
+                    { text: "Borgmesteren i København taler nu", correct: "Borgmesteren i København taler nu", needsComma: false },
+                    { text: "Han vil naturligvis komme til festen", correct: "Han vil, naturligvis, komme til festen", needsComma: true },
+                    { text: "Min veninde Sara rejser til Italien", correct: "Min veninde, Sara, rejser til Italien", needsComma: true },
+                    { text: "Ministeren for sundhed annoncerer nyt", correct: "Ministeren for sundhed annoncerer nyt", needsComma: false },
+                    { text: "De har desværre ikke tid", correct: "De har, desværre, ikke tid", needsComma: true },
+                    { text: "Læreren hr. Olsen er på ferie", correct: "Læreren, hr. Olsen, er på ferie", needsComma: true },
+                    { text: "Formanden for klubben leder mødet", correct: "Formanden for klubben leder mødet", needsComma: false },
+                    { text: "Vi kommer selvfølgelig hvis vi kan", correct: "Vi kommer, selvfølgelig, hvis vi kan", needsComma: true },
+                    { text: "Byen Odense ligger på Fyn", correct: "Byen, Odense, ligger på Fyn", needsComma: true },
+                    { text: "Direktøren for virksomheden træffer beslutningen", correct: "Direktøren for virksomheden træffer beslutningen", needsComma: false },
+                    { text: "Det bliver efter sigende rigtig godt", correct: "Det bliver, efter sigende, rigtig godt", needsComma: true },
                 ],
             };
 
@@ -213,10 +235,44 @@
                 7: "Komma omkring tilføjelser - supplerende info",
             };
 
+            // Sample exercises: pick random subset ensuring at least 1 true and 1 false
+            const sampleExercises = (allExercises, sampleSize = 12) => {
+                const trueExercises = allExercises.filter(ex => ex.needsComma);
+                const falseExercises = allExercises.filter(ex => !ex.needsComma);
+
+                // Ensure at least 1 of each type
+                const sampled = [];
+
+                if (trueExercises.length > 0) {
+                    const randomTrue = trueExercises[Math.floor(Math.random() * trueExercises.length)];
+                    sampled.push(randomTrue);
+                }
+
+                if (falseExercises.length > 0) {
+                    const randomFalse = falseExercises[Math.floor(Math.random() * falseExercises.length)];
+                    sampled.push(randomFalse);
+                }
+
+                // Fill the rest with random exercises (excluding already selected)
+                const remaining = allExercises.filter(ex => !sampled.includes(ex));
+                const shuffled = [...remaining].sort(() => Math.random() - 0.5);
+                const additionalCount = Math.min(sampleSize - sampled.length, shuffled.length);
+                sampled.push(...shuffled.slice(0, additionalCount));
+
+                // Shuffle the final sample
+                return sampled.sort(() => Math.random() - 0.5);
+            };
+
+            // Initialize sampled exercises when component mounts or rule changes
+            React.useEffect(() => {
+                const sampled = sampleExercises(exercises[currentRule]);
+                setSampledExercises(sampled);
+            }, [currentRule]);
+
             const checkAnswer = (needsComma) => {
-                const exercise = exercises[currentRule][currentExercise];
+                const exercise = sampledExercises[currentExercise];
                 const correct = needsComma === exercise.needsComma;
-                
+
                 setAttempts(attempts + 1);
                 if (correct) {
                     setScore(score + 1);
@@ -224,9 +280,9 @@
                 } else {
                     setFeedback(`✗ Forkert. Korrekt: "${exercise.correct}"`);
                 }
-                
+
                 setTimeout(() => {
-                    if (currentExercise < exercises[currentRule].length - 1) {
+                    if (currentExercise < sampledExercises.length - 1) {
                         setCurrentExercise(currentExercise + 1);
                         setFeedback('');
                     } else {
@@ -246,10 +302,12 @@
                 setScore(0);
                 setAttempts(0);
                 setFeedback('');
+                const sampled = sampleExercises(exercises[currentRule]);
+                setSampledExercises(sampled);
             };
 
-            const currentEx = exercises[currentRule][currentExercise];
-            const isDone = currentExercise >= exercises[currentRule].length;
+            const currentEx = sampledExercises[currentExercise];
+            const isDone = currentExercise >= sampledExercises.length;
 
             return (
                 <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 p-6">
@@ -303,7 +361,7 @@
                             <div className="bg-white rounded-lg shadow-lg p-8">
                                 <div className="mb-4">
                                     <span className="text-sm text-gray-500">
-                                        Opgave {currentExercise + 1} af {exercises[currentRule].length}
+                                        Opgave {currentExercise + 1} af {sampledExercises.length}
                                     </span>
                                 </div>
 
