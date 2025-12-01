@@ -1,0 +1,473 @@
+<!DOCTYPE html>
+<html lang="da">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ordforståelse - Træning</title>
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body>
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { useState } = React;
+
+        const CheckIcon = () => (
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <polyline points="20 6 9 17 4 12"></polyline>
+            </svg>
+        );
+
+        const XIcon = () => (
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <line x1="18" y1="6" x2="6" y2="18"></line>
+                <line x1="6" y1="6" x2="18" y2="18"></line>
+            </svg>
+        );
+
+        const RefreshIcon = () => (
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <polyline points="23 4 23 10 17 10"></polyline>
+                <polyline points="1 20 1 14 7 14"></polyline>
+                <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path>
+            </svg>
+        );
+
+        const UnderstandingTrainer = () => {
+            const [currentArticleIndex, setCurrentArticleIndex] = useState(0);
+            const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
+            const [score, setScore] = useState(0);
+            const [attempts, setAttempts] = useState(0);
+            const [feedback, setFeedback] = useState('');
+            const [selectedAnswer, setSelectedAnswer] = useState(null);
+            const [answeredQuestions, setAnsweredQuestions] = useState(new Set());
+
+            // Article data structure:
+            // Each article has sentences, and some sentences have a blank with multiple choice word options
+            const articles = [
+                {
+                    title: "Kunstig intelligens truer tusindvis af job – men skaber også nye muligheder",
+                    sentences: [
+                        { text: "Den teknologiske revolution ruller videre med en hastighed, der får selv eksperter til at famle efter ord. Kunstig intelligens er ikke længere science fiction, men en realitet, der ______ stort set alle aspekter af vores arbejdsliv.",
+                            correctWord: "gennemsyrer",
+                            options: [
+                                { text: "gennemsyrer", correct: true, explanation: "'Gennemsyrer' betyder at trænge ind i alle dele af noget." },
+                                { text: "undgår", correct: false, explanation: "'Undgår' er det modsatte - AI påvirker netop arbejdslivet." },
+                                { text: "ignorerer", correct: false, explanation: "'Ignorerer' giver ikke mening - AI interagerer aktivt med arbejdslivet." },
+                                { text: "ødelægger", correct: false, explanation: "'Ødelægger' er for negativt og ikke nuanceret nok." }
+                            ]
+                        },
+                        { text: "Fra kundeservice til advokatkontorer, fra hospitaler til fabrikshaller – overalt implementeres systemer, der kan udføre opgaver, som tidligere krævede menneskelig intelligens. Ifølge en ny rapport fra Copenhagen Business School står op mod 300.000 danske job over for ______ forandringer inden 2030.",
+                            correctWord: "fundamentale",
+                            options: [
+                                { text: "fundamentale", correct: true, explanation: "'Fundamentale' betyder grundlæggende eller afgørende store." },
+                                { text: "ubetydelige", correct: false, explanation: "'Ubetydelige' modsiger konteksten om stor påvirkning." },
+                                { text: "kortvarige", correct: false, explanation: "'Kortvarige' passer ikke - det handler om langsigtede ændringer." },
+                                { text: "symbolske", correct: false, explanation: "'Symbolske' antyder kun overfladiske ændringer." }
+                            ]
+                        },
+                        { text: "Men billedet er ikke entydigt. For samtidig med at nogle job forsvinder, opstår der nye muligheder, som kræver helt andre kompetencer." },
+                        { text: "»Vi ser en ______ forskydning i, hvilke færdigheder der er efterspurgt på arbejdsmarkedet,« forklarer professor Mette Skovgaard fra CBS. »Rutineprægede opgaver automatiseres, mens der er stigende behov for kreativitet, analytisk tænkning og evnen til at samarbejde med AI-systemer.«",
+                            correctWord: "markant",
+                            options: [
+                                { text: "markant", correct: true, explanation: "'Markant' betyder tydelig eller betydelig." },
+                                { text: "diskret", correct: false, explanation: "'Diskret' betyder det modsatte - subtil og usynlig." },
+                                { text: "irrelevant", correct: false, explanation: "'Irrelevant' modsiger at der er tale om en vigtig forskydning." },
+                                { text: "fiktiv", correct: false, explanation: "'Fiktiv' betyder indbildt, men forskydningen er reel." }
+                            ]
+                        },
+                        { text: "Særligt efteruddannelse bliver afgørende. Uddannelsesinstitutioner landet over er i gang med at ______ deres kurser for at imødekomme den nye virkelighed. Tekniske universiteter oplever rekordstor søgning til programmer, der kombinerer traditionelle fagområder med AI og dataanalyse.",
+                            correctWord: "revidere",
+                            options: [
+                                { text: "revidere", correct: true, explanation: "'Revidere' betyder at gennemgå og opdatere." },
+                                { text: "afvikle", correct: false, explanation: "'Afvikle' betyder at lukke ned, ikke opdatere." },
+                                { text: "gentage", correct: false, explanation: "'Gentage' passer ikke - de skal ændre, ikke fortsætte uændret." },
+                                { text: "bevare", correct: false, explanation: "'Bevare' modsiger behovet for tilpasning." }
+                            ]
+                        },
+                        { text: "»Nøglen er ikke at kæmpe imod teknologien, men at forstå hvordan vi kan arbejde sammen med den,« siger Skovgaard. »De, der formår at ______ AI som et værktøj snarere end en trussel, vil have de bedste chancer på fremtidens arbejdsmarked.«",
+                            correctWord: "anskue",
+                            options: [
+                                { text: "anskue", correct: true, explanation: "'Anskue' betyder at se eller betragte noget på en bestemt måde." },
+                                { text: "afvise", correct: false, explanation: "'Afvise' modsiger budskabet om samarbejde." },
+                                { text: "frygte", correct: false, explanation: "'Frygte' passer ikke til konteksten om at se AI som værktøj." },
+                                { text: "overse", correct: false, explanation: "'Overse' betyder at se bort fra, ikke at forstå." }
+                            ]
+                        },
+                        { text: "Fagforeninger advarer dog om, at overgangen ikke må ske på bekostning af medarbejdernes rettigheder og trivsel. De kræver, at virksomheder tager ansvar for omskoling og sikrer ordentlige vilkår i transformationsprocessen." }
+                    ]
+                },
+                {
+                    title: "Klimakrisen eskalerer: Forskere advarer om point of no return",
+                    sentences: [
+                        { text: "Med svedperler på panden præsenterede FN's klimapanel i går deres mest alarmerende rapport til dato. Konklusionen er ikke til at tage fejl af: Hvis ikke verdens nationer ______ drastisk inden 2030, risikerer vi irreversible klimaforandringer.",
+                            correctWord: "intervenerer",
+                            options: [
+                                { text: "intervenerer", correct: true, explanation: "'Intervenerer' betyder at gribe ind eller handle aktivt." },
+                                { text: "observerer", correct: false, explanation: "'Observerer' er for passivt - der er brug for handling." },
+                                { text: "venter", correct: false, explanation: "'Venter' modsiger nødvendigheden af hurtig handling." },
+                                { text: "diskuterer", correct: false, explanation: "'Diskuterer' er utilstrækkeligt - der er brug for konkret handling." }
+                            ]
+                        },
+                        { text: "Rapporten dokumenterer, hvordan de såkaldte tipping points – kritiske vendepunkter i klimasystemet – nærmer sig hurtigere end antaget. Når disse punkter nås, sættes selvforstærkende processer i gang, som menneskeheden ikke vil kunne standse." },
+                        { text: "»Vi taler om fænomener som smeltning af permafrost i Arktis, kollaps af Amazonas-regnskoven og sammenbrud af Golfstrømmen,« forklarer klimaforsker Jonas Nordström fra Københavns Universitet. »Hver især vil have ______ konsekvenser for livet på jorden.«",
+                            correctWord: "katastrofale",
+                            options: [
+                                { text: "katastrofale", correct: true, explanation: "'Katastrofale' betyder meget alvorlige eller ødelæggende." },
+                                { text: "beskedne", correct: false, explanation: "'Beskedne' modsiger alvoren i situationen." },
+                                { text: "acceptable", correct: false, explanation: "'Acceptable' passer ikke til beskrivelsen af kollaps." },
+                                { text: "midlertidige", correct: false, explanation: "'Midlertidige' modsiger at forandringerne er irreversible." }
+                            ]
+                        },
+                        { text: "Særligt bekymrende er udviklingen i havisens udbredelse ved polerne. Satellite data viser et fald på 40 procent siden 1980'erne, og tempoet accelererer. Dette får direkte betydning for havniveauet, som allerede truer lavtliggende områder fra Bangladesh til Holland." },
+                        { text: "Men rapporten indeholder også et håbefuldt budskab: Det er stadig muligt at undgå de værste scenarier, hvis verden ______ handler nu. Det kræver dog en omstilling af et omfang, der minder om mobiliseringen under Anden Verdenskrig.",
+                            correctWord: "kollektivt",
+                            options: [
+                                { text: "kollektivt", correct: true, explanation: "'Kollektivt' betyder sammen eller fælles." },
+                                { text: "individuelt", correct: false, explanation: "'Individuelt' er utilstrækkeligt - problemet kræver fælles indsats." },
+                                { text: "sporadisk", correct: false, explanation: "'Sporadisk' betyder spredt og tilfældig, ikke koordineret." },
+                                { text: "symbolsk", correct: false, explanation: "'Symbolsk' antyder kun overfladisk handling." }
+                            ]
+                        },
+                        { text: "Ifølge beregningerne skal de globale CO2-udledninger reduceres med 45 procent inden 2030 og nå netto-nul i 2050. Det ______ en total transformation af energisystemer, transport, landbrug og industri.",
+                            correctWord: "nødvendiggør",
+                            options: [
+                                { text: "nødvendiggør", correct: true, explanation: "'Nødvendiggør' betyder at gøre nødvendigt." },
+                                { text: "udelukker", correct: false, explanation: "'Udelukker' betyder det modsatte - at gøre umuligt." },
+                                { text: "komplicerer", correct: false, explanation: "'Komplicerer' er for svagt - det handler om nødvendighed." },
+                                { text: "forsinker", correct: false, explanation: "'Forsinker' modsiger behovet for hurtig handling." }
+                            ]
+                        },
+                        { text: "»Vi har værktøjerne og teknologien. Det, der mangler, er politisk vilje og samfundsmæssig opbakning,« konkluderer Nordström." }
+                    ]
+                },
+                {
+                    title: "Boligkrisen i hovedstaden: Når middelklassen ikke har råd til at bo",
+                    sentences: [
+                        { text: "Sarah på 32 år har et godt job som sygeplejerske på Rigshospitalet, tjener over gennemsnittet og har ingen gæld. Alligevel har hun måttet opgive drømmen om at købe en lejlighed i København." },
+                        { text: "»Det er ______ at skulle indse, at selvom jeg gør alt rigtigt – tager en uddannelse, arbejder hårdt, sparer op – så er det stadig ikke nok,« fortæller hun, mens vi sidder i hendes lejede etværelses på 43 kvadratmeter i Valby, som koster hende 9.500 kroner om måneden.",
+                            correctWord: "absurd",
+                            options: [
+                                { text: "absurd", correct: true, explanation: "'Absurd' betyder meningsløst eller urimeligt." },
+                                { text: "naturligt", correct: false, explanation: "'Naturligt' modsiger oplevelsen af uretfærdighed." },
+                                { text: "tilfredsstillende", correct: false, explanation: "'Tilfredsstillende' passer ikke til frustrationen." },
+                                { text: "bekvemt", correct: false, explanation: "'Bekvemt' modsiger hele situationens karakter." }
+                            ]
+                        },
+                        { text: "Hun er langtfra alene. Ifølge tal fra Boligøkonomisk Videncenter er boligpriserne i hovedstadsområdet steget med 127 procent de seneste 15 år, mens lønningerne kun er vokset med 32 procent. Resultatet er en boligkrise, der ______ generationer af københavnere.",
+                            correctWord: "marginaliserer",
+                            options: [
+                                { text: "marginaliserer", correct: true, explanation: "'Marginaliserer' betyder at skubbe ud til kanten eller udelukke." },
+                                { text: "begunstiget", correct: false, explanation: "'Begunstiget' betyder at favorisere, ikke udelukke." },
+                                { text: "berige", correct: false, explanation: "'Berige' modsiger de negative konsekvenser." },
+                                { text: "forener", correct: false, explanation: "'Forener' passer ikke - krisen skaber ulighed." }
+                            ]
+                        },
+                        { text: "Boligøkonom Peter Mogensen kalder udviklingen »uholdbar og demokratisk problematisk«. »Når almindelige lønmodtagere – lærere, sygeplejersker, politibetjente – ikke har mulighed for at bo i den by, de arbejder i, undermineres byens sociale ______ ,« forklarer han.",
+                            correctWord: "sammenhængskraft",
+                            options: [
+                                { text: "sammenhængskraft", correct: true, explanation: "'Sammenhængskraft' betyder fællesskab og social stabilitet." },
+                                { text: "opdeling", correct: false, explanation: "'Opdeling' er konsekvensen, ikke det der undermineres." },
+                                { text: "hierarki", correct: false, explanation: "'Hierarki' handler om struktur, ikke fællesskab." },
+                                { text: "konkurrence", correct: false, explanation: "'Konkurrence' passer ikke i denne sammenhæng." }
+                            ]
+                        },
+                        { text: "Problemet ______ af flere faktorer: Historisk lave renter, der har gjort det attraktivt at investere i fast ejendom, en befolkningstilvækst på 100.000 nye københavnere på 10 år, og en boligproduktion, der ikke har kunnet følge med efterspørgslen.",
+                            correctWord: "forværres",
+                            options: [
+                                { text: "forværres", correct: true, explanation: "'Forværres' betyder at blive værre eller intensiveres." },
+                                { text: "løses", correct: false, explanation: "'Løses' er det modsatte af hvad der beskrives." },
+                                { text: "ignoreres", correct: false, explanation: "'Ignoreres' handler om manglende opmærksomhed, ikke årsager." },
+                                { text: "simplificeres", correct: false, explanation: "'Simplificeres' passer ikke - problemet bliver mere komplekst." }
+                            ]
+                        },
+                        { text: "For Sarah betyder det nu en time og 20 minutters daglig transport til arbejde, fordi hun har måttet flytte til en billigere lejlighed i Køge. »Jeg elsker mit job, men nogle dage overvejer jeg at søge til en anden region, hvor jeg faktisk har råd til at bo,« siger hun." },
+                        { text: "Københavns Kommune har netop lanceret en handlingsplan, der skal fremme byggeri af 5.000 almene boliger årligt. Men kritikere ______ , at det er for lidt og kommer for sent.",
+                            correctWord: "påpeger",
+                            options: [
+                                { text: "påpeger", correct: true, explanation: "'Påpeger' betyder at fremhæve eller gøre opmærksom på." },
+                                { text: "benægter", correct: false, explanation: "'Benægter' betyder det modsatte - at afvise." },
+                                { text: "overser", correct: false, explanation: "'Overser' betyder at ignorere, ikke at kritisere." },
+                                { text: "accepterer", correct: false, explanation: "'Accepterer' modsiger at der er tale om kritik." }
+                            ]
+                        }
+                    ]
+                }
+            ];
+
+            const currentArticle = articles[currentArticleIndex];
+            const questionsInArticle = currentArticle.sentences.filter(s => s.correctWord);
+            const currentQuestion = questionsInArticle[currentQuestionIndex];
+            const questionGlobalIndex = currentArticleIndex * 10 + currentQuestionIndex; // Unique key for each question
+            const hasAnswered = answeredQuestions.has(questionGlobalIndex);
+
+            // Shuffle options consistently for each question using a seeded random based on question index
+            const shuffledOptions = React.useMemo(() => {
+                if (!currentQuestion) return [];
+                const options = [...currentQuestion.options];
+                // Simple seeded shuffle based on question index to be consistent
+                const seed = questionGlobalIndex;
+                for (let i = options.length - 1; i > 0; i--) {
+                    const j = Math.floor(((seed * (i + 1) * 9301 + 49297) % 233280) / 233280 * (i + 1));
+                    [options[i], options[j]] = [options[j], options[i]];
+                }
+                return options;
+            }, [currentQuestion, questionGlobalIndex]);
+
+            const renderSentence = (sentence, index) => {
+                if (!sentence.correctWord) {
+                    return (
+                        <p key={index} className="text-gray-800 leading-relaxed mb-3">
+                            {sentence.text}
+                        </p>
+                    );
+                }
+
+                // Check if this is the current question
+                const isCurrentQuestion = sentence === currentQuestion;
+
+                if (!isCurrentQuestion) {
+                    // Not the current question - show plain text or with answer if already answered
+                    const qIndex = currentArticle.sentences.filter(s => s.correctWord).indexOf(sentence);
+                    const qGlobalIndex = currentArticleIndex * 10 + qIndex;
+                    const wasAnswered = answeredQuestions.has(qGlobalIndex);
+
+                    // Replace blank with the correct word if answered, otherwise show blank
+                    const displayText = wasAnswered ? sentence.text.replace('______', sentence.correctWord) : sentence.text;
+
+                    return (
+                        <p key={index} className="text-gray-800 leading-relaxed mb-3">
+                            {wasAnswered ? (
+                                <>
+                                    {displayText.split(sentence.correctWord).map((part, i, arr) => (
+                                        i < arr.length - 1 ? (
+                                            <React.Fragment key={i}>
+                                                {part}
+                                                <span className="font-semibold text-purple-700">{sentence.correctWord}</span>
+                                            </React.Fragment>
+                                        ) : part
+                                    ))}
+                                </>
+                            ) : displayText}
+                        </p>
+                    );
+                }
+
+                // Current question - show blank with underline
+                return (
+                    <p key={index} className="text-gray-800 leading-relaxed mb-3">
+                        {sentence.text.split('______').map((part, i, arr) => (
+                            i < arr.length - 1 ? (
+                                <React.Fragment key={i}>
+                                    {part}
+                                    <span className="inline-block border-b-2 border-purple-500 px-2 mx-1 min-w-[100px] text-center font-semibold">
+                                        ______
+                                    </span>
+                                </React.Fragment>
+                            ) : part
+                        ))}
+                    </p>
+                );
+            };
+
+            const handleAnswer = (optionIndex) => {
+                if (hasAnswered) return; // Don't allow re-answering
+
+                setSelectedAnswer(optionIndex);
+                const correct = shuffledOptions[optionIndex].correct;
+                const explanation = shuffledOptions[optionIndex].explanation;
+
+                setAttempts(attempts + 1);
+                if (correct) {
+                    setScore(score + 1);
+                    setFeedback(`Korrekt! ${explanation}`);
+                } else {
+                    const correctOption = shuffledOptions.find(o => o.correct);
+                    setFeedback(`Forkert. ${explanation} Det rigtige svar er: "${correctOption.text}"`);
+                }
+
+                setTimeout(() => {
+                    // Mark this question as answered before moving on
+                    setAnsweredQuestions(new Set([...answeredQuestions, questionGlobalIndex]));
+
+                    if (currentQuestionIndex < questionsInArticle.length - 1) {
+                        // Move to next question in same article
+                        setCurrentQuestionIndex(currentQuestionIndex + 1);
+                        setFeedback('');
+                        setSelectedAnswer(null);
+                    } else if (currentArticleIndex < articles.length - 1) {
+                        // Move to next article
+                        setCurrentArticleIndex(currentArticleIndex + 1);
+                        setCurrentQuestionIndex(0);
+                        setFeedback('');
+                        setSelectedAnswer(null);
+                    } else {
+                        // All done
+                        setFeedback('Du har gennemført alle artikler!');
+                    }
+                }, 2500);
+            };
+
+            const reset = () => {
+                setCurrentArticleIndex(0);
+                setCurrentQuestionIndex(0);
+                setScore(0);
+                setAttempts(0);
+                setFeedback('');
+                setSelectedAnswer(null);
+                setAnsweredQuestions(new Set());
+            };
+
+            const changeArticle = (index) => {
+                setCurrentArticleIndex(index);
+                setCurrentQuestionIndex(0);
+                setFeedback('');
+                setSelectedAnswer(null);
+            };
+
+            const totalQuestions = articles.reduce((sum, article) =>
+                sum + article.sentences.filter(s => s.correctWord).length, 0
+            );
+            const answeredCount = answeredQuestions.size;
+            const isDone = answeredCount >= totalQuestions;
+
+            return (
+                <div className="min-h-screen bg-gradient-to-br from-purple-50 to-pink-100 p-6">
+                    <div className="max-w-4xl mx-auto">
+                        <div className="bg-white rounded-lg shadow-lg p-8 mb-6">
+                            <h1 className="text-3xl font-bold text-purple-900 mb-2">Ordforståelse</h1>
+                            <p className="text-gray-600 mb-4">Træn din forståelse af svære ord i kontekst</p>
+
+                            <div className="flex items-center justify-between mb-6 p-4 bg-purple-50 rounded-lg">
+                                <div className="text-sm">
+                                    <span className="font-semibold text-purple-900">Score:</span>
+                                    <span className="ml-2 text-lg font-bold text-purple-600">
+                                        {score}/{attempts}
+                                    </span>
+                                    <span className="ml-4 text-gray-600">
+                                        Besvaret: {answeredCount}/{totalQuestions}
+                                    </span>
+                                </div>
+                                <button
+                                    onClick={reset}
+                                    className="flex items-center gap-2 px-4 py-2 bg-white border border-purple-200 rounded-lg hover:bg-purple-50 transition"
+                                >
+                                    <RefreshIcon />
+                                    Nulstil
+                                </button>
+                            </div>
+
+                            <div className="mb-6">
+                                <h3 className="text-sm font-semibold text-gray-700 mb-3">Vælg artikel:</h3>
+                                <div className="grid grid-cols-1 md:grid-cols-3 gap-2">
+                                    {articles.map((article, index) => (
+                                        <button
+                                            key={index}
+                                            onClick={() => changeArticle(index)}
+                                            className={`px-4 py-3 rounded-lg font-medium transition text-left ${
+                                                currentArticleIndex === index
+                                                    ? 'bg-purple-600 text-white'
+                                                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                                            }`}
+                                        >
+                                            <div className="text-sm">Artikel {index + 1}</div>
+                                            <div className="text-xs opacity-80 mt-1">{article.title}</div>
+                                        </button>
+                                    ))}
+                                </div>
+                            </div>
+                        </div>
+
+                        {!isDone ? (
+                            <div className="bg-white rounded-lg shadow-lg p-8">
+                                <h2 className="text-2xl font-bold text-purple-900 mb-4">
+                                    {currentArticle.title}
+                                </h2>
+
+                                <div className="mb-6 text-sm text-gray-500">
+                                    Spørgsmål {currentQuestionIndex + 1} af {questionsInArticle.length} i denne artikel
+                                </div>
+
+                                <div className="mb-8 bg-gray-50 p-6 rounded-lg border-l-4 border-purple-400">
+                                    {currentArticle.sentences.map((sentence, index) =>
+                                        renderSentence(sentence, index)
+                                    )}
+                                </div>
+
+                                <div className="mb-6">
+                                    <p className="text-lg font-medium text-gray-700 mb-4">
+                                        Hvilket ord passer bedst i den tomme plads?
+                                    </p>
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                                        {shuffledOptions.map((option, index) => (
+                                            <button
+                                                key={index}
+                                                onClick={() => handleAnswer(index)}
+                                                disabled={selectedAnswer !== null}
+                                                className={`px-6 py-4 rounded-lg transition font-medium text-left ${
+                                                    selectedAnswer === null
+                                                        ? 'bg-purple-100 hover:bg-purple-200 text-gray-800'
+                                                        : selectedAnswer === index
+                                                        ? option.correct
+                                                            ? 'bg-green-500 text-white'
+                                                            : 'bg-red-500 text-white'
+                                                        : 'bg-gray-100 text-gray-500'
+                                                }`}
+                                            >
+                                                <div className="flex items-center gap-2">
+                                                    {selectedAnswer === index && (
+                                                        option.correct ? <CheckIcon /> : <XIcon />
+                                                    )}
+                                                    {option.text}
+                                                </div>
+                                            </button>
+                                        ))}
+                                    </div>
+                                </div>
+
+                                {feedback && (
+                                    <div className={`p-4 rounded-lg ${
+                                        feedback.includes('Korrekt')
+                                            ? 'bg-green-100 text-green-800 border border-green-300'
+                                            : 'bg-red-100 text-red-800 border border-red-300'
+                                    }`}>
+                                        <p className="font-medium">{feedback}</p>
+                                    </div>
+                                )}
+                            </div>
+                        ) : (
+                            <div className="bg-white rounded-lg shadow-lg p-8 text-center">
+                                <h2 className="text-2xl font-bold text-purple-900 mb-4">
+                                    Tillykke!
+                                </h2>
+                                <p className="text-gray-700 mb-6">
+                                    Du har gennemført alle artikler.
+                                </p>
+                                <p className="text-lg mb-6">
+                                    Din score: <span className="font-bold text-purple-600">{score}/{attempts}</span>
+                                    {attempts > 0 && (
+                                        <span className="text-gray-600 ml-2">
+                                            ({Math.round((score / attempts) * 100)}%)
+                                        </span>
+                                    )}
+                                </p>
+                                <button
+                                    onClick={reset}
+                                    className="px-6 py-3 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition font-medium"
+                                >
+                                    Start forfra
+                                </button>
+                            </div>
+                        )}
+                    </div>
+                </div>
+            );
+        };
+
+        ReactDOM.render(<UnderstandingTrainer />, document.getElementById('root'));
+    </script>
+</body>
+</html>
