@@ -346,8 +346,7 @@
                 } else {
                     setFeedback(`✗ Forkert. "${currentWord.word}" er ${getClassLabel(currentWord.class)}, ikke ${getClassLabel(classId)}.`);
                     setTimeout(() => {
-                        setFeedback('');
-                        setSelectedClass(null);
+                        moveToNextWord();
                     }, 2500);
                 }
             };
