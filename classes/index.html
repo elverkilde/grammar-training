@@ -1,0 +1,722 @@
+<!DOCTYPE html>
+<html lang="da">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ordklassetræning - 8. klasse</title>
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body>
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { useState } = React;
+
+        const CheckIcon = () => (
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <polyline points="20 6 9 17 4 12"></polyline>
+            </svg>
+        );
+
+        const XIcon = () => (
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <line x1="18" y1="6" x2="6" y2="18"></line>
+                <line x1="6" y1="6" x2="18" y2="18"></line>
+            </svg>
+        );
+
+        const RefreshIcon = () => (
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <polyline points="23 4 23 10 17 10"></polyline>
+                <polyline points="1 20 1 14 7 14"></polyline>
+                <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path>
+            </svg>
+        );
+
+        const WordClassTrainer = () => {
+            const [currentWordIndex, setCurrentWordIndex] = useState(0);
+            const [stage, setStage] = useState('classify'); // 'classify' or 'inflect'
+            const [score, setScore] = useState(0);
+            const [attempts, setAttempts] = useState(0);
+            const [feedback, setFeedback] = useState('');
+            const [selectedClass, setSelectedClass] = useState(null);
+            const [inflectionInputs, setInflectionInputs] = useState({});
+            const [completedWords, setCompletedWords] = useState(new Set());
+
+            const words = [
+                {
+                    word: "hus",
+                    class: "substantiv",
+                    gender: "et-ord",
+                    inflections: {
+                        singular: "hus",
+                        plural: "huse",
+                        definite: "huset",
+                        definitePlural: "husene"
+                    }
+                },
+                {
+                    word: "løbe",
+                    class: "verbum",
+                    inflections: {
+                        infinitiv: "løbe",
+                        nutid: "løber",
+                        datid: "løb",
+                        førdatid: "løbet"
+                    }
+                },
+                {
+                    word: "smuk",
+                    class: "adjektiv",
+                    inflections: {
+                        positiv: "smuk",
+                        komparativ: "smukkere",
+                        superlativ: "smukkest"
+                    }
+                },
+                {
+                    word: "bog",
+                    class: "substantiv",
+                    gender: "en-ord",
+                    inflections: {
+                        singular: "bog",
+                        plural: "bøger",
+                        definite: "bogen",
+                        definitePlural: "bøgerne"
+                    }
+                },
+                {
+                    word: "spise",
+                    class: "verbum",
+                    inflections: {
+                        infinitiv: "spise",
+                        nutid: "spiser",
+                        datid: "spiste",
+                        førdatid: "spist"
+                    }
+                },
+                {
+                    word: "hurtig",
+                    class: "adjektiv",
+                    inflections: {
+                        positiv: "hurtig",
+                        komparativ: "hurtigere",
+                        superlativ: "hurtigst"
+                    }
+                },
+                {
+                    word: "hurtigt",
+                    class: "adverbium",
+                    inflections: null
+                },
+                {
+                    word: "barn",
+                    class: "substantiv",
+                    gender: "et-ord",
+                    inflections: {
+                        singular: "barn",
+                        plural: "børn",
+                        definite: "barnet",
+                        definitePlural: "børnene"
+                    }
+                },
+                {
+                    word: "tænke",
+                    class: "verbum",
+                    inflections: {
+                        infinitiv: "tænke",
+                        nutid: "tænker",
+                        datid: "tænkte",
+                        førdatid: "tænkt"
+                    }
+                },
+                {
+                    word: "stor",
+                    class: "adjektiv",
+                    inflections: {
+                        positiv: "stor",
+                        komparativ: "større",
+                        superlativ: "størst"
+                    }
+                },
+                {
+                    word: "kat",
+                    class: "substantiv",
+                    gender: "en-ord",
+                    inflections: {
+                        singular: "kat",
+                        plural: "katte",
+                        definite: "katten",
+                        definitePlural: "kattene"
+                    }
+                },
+                {
+                    word: "synge",
+                    class: "verbum",
+                    inflections: {
+                        infinitiv: "synge",
+                        nutid: "synger",
+                        datid: "sang",
+                        førdatid: "sunget"
+                    }
+                },
+                {
+                    word: "glad",
+                    class: "adjektiv",
+                    inflections: {
+                        positiv: "glad",
+                        komparativ: "gladere",
+                        superlativ: "gladest"
+                    }
+                },
+                {
+                    word: "under",
+                    class: "præposition",
+                    inflections: null
+                },
+                {
+                    word: "han",
+                    class: "pronomen",
+                    inflections: null
+                },
+                {
+                    word: "og",
+                    class: "konjunktion",
+                    inflections: null
+                },
+                {
+                    word: "skrive",
+                    class: "verbum",
+                    inflections: {
+                        infinitiv: "skrive",
+                        nutid: "skriver",
+                        datid: "skrev",
+                        førdatid: "skrevet"
+                    }
+                },
+                {
+                    word: "gammel",
+                    class: "adjektiv",
+                    inflections: {
+                        positiv: "gammel",
+                        komparativ: "ældre",
+                        superlativ: "ældst"
+                    }
+                },
+                {
+                    word: "bord",
+                    class: "substantiv",
+                    gender: "et-ord",
+                    inflections: {
+                        singular: "bord",
+                        plural: "borde",
+                        definite: "bordet",
+                        definitePlural: "bordene"
+                    }
+                },
+                {
+                    word: "finde",
+                    class: "verbum",
+                    inflections: {
+                        infinitiv: "finde",
+                        nutid: "finder",
+                        datid: "fandt",
+                        førdatid: "fundet"
+                    }
+                },
+                {
+                    word: "god",
+                    class: "adjektiv",
+                    inflections: {
+                        positiv: "god",
+                        komparativ: "bedre",
+                        superlativ: "bedst"
+                    }
+                },
+                {
+                    word: "pige",
+                    class: "substantiv",
+                    gender: "en-ord",
+                    inflections: {
+                        singular: "pige",
+                        plural: "piger",
+                        definite: "pigen",
+                        definitePlural: "pigerne"
+                    }
+                },
+                {
+                    word: "give",
+                    class: "verbum",
+                    inflections: {
+                        infinitiv: "give",
+                        nutid: "giver",
+                        datid: "gav",
+                        førdatid: "givet"
+                    }
+                },
+                {
+                    word: "langsomt",
+                    class: "adverbium",
+                    inflections: null
+                },
+                {
+                    word: "over",
+                    class: "præposition",
+                    inflections: null
+                },
+                {
+                    word: "hun",
+                    class: "pronomen",
+                    inflections: null
+                },
+                {
+                    word: "men",
+                    class: "konjunktion",
+                    inflections: null
+                },
+                {
+                    word: "lille",
+                    class: "adjektiv",
+                    inflections: {
+                        positiv: "lille",
+                        komparativ: "mindre",
+                        superlativ: "mindst"
+                    }
+                },
+                {
+                    word: "drikke",
+                    class: "verbum",
+                    inflections: {
+                        infinitiv: "drikke",
+                        nutid: "drikker",
+                        datid: "drak",
+                        førdatid: "drukket"
+                    }
+                },
+                {
+                    word: "blomst",
+                    class: "substantiv",
+                    gender: "en-ord",
+                    inflections: {
+                        singular: "blomst",
+                        plural: "blomster",
+                        definite: "blomsten",
+                        definitePlural: "blomsterne"
+                    }
+                }
+            ];
+
+            const wordClasses = [
+                { id: "substantiv", label: "Substantiv (navneord)" },
+                { id: "verbum", label: "Verbum (udsagnsord)" },
+                { id: "adjektiv", label: "Adjektiv (tillægsord)" },
+                { id: "adverbium", label: "Adverbium (biord)" },
+                { id: "pronomen", label: "Pronomen (stedord)" },
+                { id: "præposition", label: "Præposition (forholdsord)" },
+                { id: "konjunktion", label: "Konjunktion (bindeord)" }
+            ];
+
+            const currentWord = words[currentWordIndex];
+            const isDone = completedWords.size >= words.length;
+
+            const checkClassification = (classId) => {
+                setSelectedClass(classId);
+                const correct = classId === currentWord.class;
+
+                setAttempts(attempts + 1);
+                if (correct) {
+                    setScore(score + 1);
+                    if (currentWord.inflections === null) {
+                        // No inflections needed - move to next word
+                        setFeedback(`✓ Korrekt! "${currentWord.word}" er ${getClassLabel(classId)}. Denne ordklasse bøjes ikke.`);
+                        setTimeout(() => {
+                            moveToNextWord();
+                        }, 2500);
+                    } else {
+                        setFeedback(`✓ Korrekt! "${currentWord.word}" er ${getClassLabel(classId)}. Nu skal du bøje ordet.`);
+                        setTimeout(() => {
+                            setStage('inflect');
+                            setFeedback('');
+                            setSelectedClass(null);
+                        }, 2000);
+                    }
+                } else {
+                    setFeedback(`✗ Forkert. "${currentWord.word}" er ${getClassLabel(currentWord.class)}, ikke ${getClassLabel(classId)}.`);
+                    setTimeout(() => {
+                        setFeedback('');
+                        setSelectedClass(null);
+                    }, 2500);
+                }
+            };
+
+            const getClassLabel = (classId) => {
+                const found = wordClasses.find(c => c.id === classId);
+                return found ? found.label.toLowerCase() : classId;
+            };
+
+            const checkInflections = () => {
+                const word = currentWord;
+                let allCorrect = true;
+                let errors = [];
+
+                if (word.class === "substantiv") {
+                    const required = ['plural', 'definite', 'definitePlural'];
+                    required.forEach(key => {
+                        const input = (inflectionInputs[key] || '').toLowerCase().trim();
+                        const correct = word.inflections[key].toLowerCase();
+                        if (input !== correct) {
+                            allCorrect = false;
+                            errors.push(`${getInflectionLabel(key)}: "${word.inflections[key]}"`);
+                        }
+                    });
+                } else if (word.class === "verbum") {
+                    const required = ['nutid', 'datid', 'førdatid'];
+                    required.forEach(key => {
+                        const input = (inflectionInputs[key] || '').toLowerCase().trim();
+                        const correct = word.inflections[key].toLowerCase();
+                        if (input !== correct) {
+                            allCorrect = false;
+                            errors.push(`${getInflectionLabel(key)}: "${word.inflections[key]}"`);
+                        }
+                    });
+                } else if (word.class === "adjektiv") {
+                    const required = ['komparativ', 'superlativ'];
+                    required.forEach(key => {
+                        const input = (inflectionInputs[key] || '').toLowerCase().trim();
+                        const correct = word.inflections[key].toLowerCase();
+                        if (input !== correct) {
+                            allCorrect = false;
+                            errors.push(`${getInflectionLabel(key)}: "${word.inflections[key]}"`);
+                        }
+                    });
+                }
+
+                setAttempts(attempts + 1);
+                if (allCorrect) {
+                    setScore(score + 1);
+                    setFeedback('✓ Korrekt! Alle bøjninger er rigtige.');
+                } else {
+                    setFeedback(`✗ Forkert. Korrekte svar:\n${errors.join('\n')}`);
+                }
+
+                setTimeout(() => {
+                    moveToNextWord();
+                }, 2500);
+            };
+
+            const getInflectionLabel = (key) => {
+                const labels = {
+                    plural: 'Flertal',
+                    definite: 'Bestemt form',
+                    definitePlural: 'Bestemt flertal',
+                    nutid: 'Nutid',
+                    datid: 'Datid',
+                    førdatid: 'Førdatid',
+                    komparativ: 'Komparativ',
+                    superlativ: 'Superlativ'
+                };
+                return labels[key] || key;
+            };
+
+            const moveToNextWord = () => {
+                setCompletedWords(new Set([...completedWords, currentWordIndex]));
+                if (currentWordIndex < words.length - 1) {
+                    setCurrentWordIndex(currentWordIndex + 1);
+                    setStage('classify');
+                    setFeedback('');
+                    setSelectedClass(null);
+                    setInflectionInputs({});
+                }
+            };
+
+            const reset = () => {
+                setCurrentWordIndex(0);
+                setStage('classify');
+                setScore(0);
+                setAttempts(0);
+                setFeedback('');
+                setSelectedClass(null);
+                setInflectionInputs({});
+                setCompletedWords(new Set());
+            };
+
+            const handleInflectionInput = (key, value) => {
+                setInflectionInputs({
+                    ...inflectionInputs,
+                    [key]: value
+                });
+            };
+
+            const renderInflectionForm = () => {
+                const word = currentWord;
+
+                if (word.class === "substantiv") {
+                    return (
+                        <div className="space-y-4">
+                            <div className="bg-blue-50 p-4 rounded-lg mb-4">
+                                <p className="text-sm text-gray-700">
+                                    <span className="font-semibold">Køn:</span> {word.gender === "en-ord" ? "en-ord" : "et-ord"}
+                                </p>
+                            </div>
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">
+                                    Flertal (ubestemt)
+                                </label>
+                                <input
+                                    type="text"
+                                    value={inflectionInputs.plural || ''}
+                                    onChange={(e) => handleInflectionInput('plural', e.target.value)}
+                                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                    placeholder="f.eks. huse"
+                                />
+                            </div>
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">
+                                    Bestemt form (ental)
+                                </label>
+                                <input
+                                    type="text"
+                                    value={inflectionInputs.definite || ''}
+                                    onChange={(e) => handleInflectionInput('definite', e.target.value)}
+                                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                    placeholder="f.eks. huset"
+                                />
+                            </div>
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">
+                                    Bestemt form (flertal)
+                                </label>
+                                <input
+                                    type="text"
+                                    value={inflectionInputs.definitePlural || ''}
+                                    onChange={(e) => handleInflectionInput('definitePlural', e.target.value)}
+                                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                    placeholder="f.eks. husene"
+                                />
+                            </div>
+                        </div>
+                    );
+                } else if (word.class === "verbum") {
+                    return (
+                        <div className="space-y-4">
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">
+                                    Nutid
+                                </label>
+                                <input
+                                    type="text"
+                                    value={inflectionInputs.nutid || ''}
+                                    onChange={(e) => handleInflectionInput('nutid', e.target.value)}
+                                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                    placeholder="f.eks. løber"
+                                />
+                            </div>
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">
+                                    Datid
+                                </label>
+                                <input
+                                    type="text"
+                                    value={inflectionInputs.datid || ''}
+                                    onChange={(e) => handleInflectionInput('datid', e.target.value)}
+                                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                    placeholder="f.eks. løb"
+                                />
+                            </div>
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">
+                                    Førdatid (participium)
+                                </label>
+                                <input
+                                    type="text"
+                                    value={inflectionInputs.førdatid || ''}
+                                    onChange={(e) => handleInflectionInput('førdatid', e.target.value)}
+                                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                    placeholder="f.eks. løbet"
+                                />
+                            </div>
+                        </div>
+                    );
+                } else if (word.class === "adjektiv") {
+                    return (
+                        <div className="space-y-4">
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">
+                                    Komparativ (2. grad)
+                                </label>
+                                <input
+                                    type="text"
+                                    value={inflectionInputs.komparativ || ''}
+                                    onChange={(e) => handleInflectionInput('komparativ', e.target.value)}
+                                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                    placeholder="f.eks. smukkere"
+                                />
+                            </div>
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">
+                                    Superlativ (3. grad)
+                                </label>
+                                <input
+                                    type="text"
+                                    value={inflectionInputs.superlativ || ''}
+                                    onChange={(e) => handleInflectionInput('superlativ', e.target.value)}
+                                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                    placeholder="f.eks. smukkest"
+                                />
+                            </div>
+                        </div>
+                    );
+                }
+            };
+
+            return (
+                <div className="min-h-screen bg-gradient-to-br from-blue-50 to-cyan-100 p-6">
+                    <div className="max-w-3xl mx-auto">
+                        <div className="bg-white rounded-lg shadow-lg p-8 mb-6">
+                            <h1 className="text-3xl font-bold text-blue-900 mb-2">Ordklassetræning</h1>
+                            <p className="text-gray-600 mb-4">Bestem ordklasse og bøj ordene korrekt</p>
+
+                            <div className="flex items-center justify-between mb-6 p-4 bg-blue-50 rounded-lg">
+                                <div className="text-sm">
+                                    <span className="font-semibold text-blue-900">Score:</span>
+                                    <span className="ml-2 text-lg font-bold text-blue-600">
+                                        {score}/{attempts}
+                                    </span>
+                                    <span className="ml-4 text-gray-600">
+                                        Ord gennemført: {completedWords.size}/{words.length}
+                                    </span>
+                                </div>
+                                <button
+                                    onClick={reset}
+                                    className="flex items-center gap-2 px-4 py-2 bg-white border border-blue-200 rounded-lg hover:bg-blue-50 transition"
+                                >
+                                    <RefreshIcon />
+                                    Nulstil
+                                </button>
+                            </div>
+                        </div>
+
+                        {!isDone ? (
+                            <div className="bg-white rounded-lg shadow-lg p-8">
+                                <div className="mb-6">
+                                    <span className="text-sm text-gray-500">
+                                        Ord {currentWordIndex + 1} af {words.length}
+                                    </span>
+                                </div>
+
+                                {stage === 'classify' && (
+                                    <>
+                                        <div className="mb-8 text-center">
+                                            <div className="inline-block bg-yellow-50 px-8 py-6 rounded-lg border-2 border-yellow-400">
+                                                <p className="text-4xl font-bold text-gray-800">
+                                                    {currentWord.word}
+                                                </p>
+                                            </div>
+                                        </div>
+
+                                        <div className="mb-6">
+                                            <p className="text-lg font-medium text-gray-700 mb-4">
+                                                Hvilken ordklasse tilhører dette ord?
+                                            </p>
+                                            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                                                {wordClasses.map((wordClass) => (
+                                                    <button
+                                                        key={wordClass.id}
+                                                        onClick={() => checkClassification(wordClass.id)}
+                                                        disabled={selectedClass !== null}
+                                                        className={`px-6 py-4 rounded-lg transition font-medium text-left ${
+                                                            selectedClass === null
+                                                                ? 'bg-blue-100 hover:bg-blue-200 text-gray-800'
+                                                                : selectedClass === wordClass.id
+                                                                ? wordClass.id === currentWord.class
+                                                                    ? 'bg-green-500 text-white'
+                                                                    : 'bg-red-500 text-white'
+                                                                : 'bg-gray-100 text-gray-500'
+                                                        }`}
+                                                    >
+                                                        <div className="flex items-center gap-2">
+                                                            {selectedClass === wordClass.id && (
+                                                                wordClass.id === currentWord.class ? <CheckIcon /> : <XIcon />
+                                                            )}
+                                                            {wordClass.label}
+                                                        </div>
+                                                    </button>
+                                                ))}
+                                            </div>
+                                        </div>
+                                    </>
+                                )}
+
+                                {stage === 'inflect' && (
+                                    <>
+                                        <div className="mb-8">
+                                            <div className="bg-blue-50 p-4 rounded-lg mb-4">
+                                                <p className="text-lg">
+                                                    <span className="font-semibold text-blue-900">Ord:</span>{' '}
+                                                    <span className="text-2xl font-bold text-gray-800">{currentWord.word}</span>
+                                                </p>
+                                                <p className="text-sm text-gray-600 mt-1">
+                                                    ({getClassLabel(currentWord.class)})
+                                                </p>
+                                            </div>
+                                            <p className="text-lg font-medium text-gray-700 mb-4">
+                                                Bøj ordet i de følgende former:
+                                            </p>
+                                            {renderInflectionForm()}
+                                        </div>
+
+                                        <button
+                                            onClick={checkInflections}
+                                            className="w-full px-6 py-4 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition font-medium text-lg"
+                                        >
+                                            Tjek svar
+                                        </button>
+                                    </>
+                                )}
+
+                                {feedback && (
+                                    <div className={`mt-6 p-4 rounded-lg ${
+                                        feedback.includes('Korrekt')
+                                            ? 'bg-green-100 text-green-800 border border-green-300'
+                                            : 'bg-red-100 text-red-800 border border-red-300'
+                                    }`}>
+                                        <p className="font-medium whitespace-pre-line">{feedback}</p>
+                                    </div>
+                                )}
+                            </div>
+                        ) : (
+                            <div className="bg-white rounded-lg shadow-lg p-8 text-center">
+                                <h2 className="text-2xl font-bold text-blue-900 mb-4">
+                                    Godt klaret!
+                                </h2>
+                                <p className="text-gray-700 mb-6">
+                                    Du har gennemført alle ord.
+                                </p>
+                                <p className="text-lg mb-6">
+                                    Din score: <span className="font-bold text-blue-600">{score}/{attempts}</span>
+                                    {attempts > 0 && (
+                                        <span className="text-gray-600 ml-2">
+                                            ({Math.round((score / attempts) * 100)}%)
+                                        </span>
+                                    )}
+                                </p>
+                                <button
+                                    onClick={reset}
+                                    className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition font-medium"
+                                >
+                                    Start forfra
+                                </button>
+                            </div>
+                        )}
+                    </div>
+                </div>
+            );
+        };
+
+        ReactDOM.render(<WordClassTrainer />, document.getElementById('root'));
+    </script>
+</body>
+</html>
