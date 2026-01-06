@@ -318,15 +318,29 @@
                 let errors = [];
 
                 if (word.class === "substantiv") {
-                    const required = ['plural', 'definite', 'definitePlural'];
-                    required.forEach(key => {
-                        const input = (inflectionInputs[key] || '').toLowerCase().trim();
-                        const correct = word.inflections[key].toLowerCase();
-                        if (input !== correct) {
-                            allCorrect = false;
-                            errors.push(`${getInflectionLabel(key)}: "${word.inflections[key]}"`);
-                        }
-                    });
+                    // Check gender
+                    const genderInput = inflectionInputs.gender || '';
+                    const correctGender = word.gender === "en-ord" ? "en" : "et";
+                    if (genderInput !== correctGender) {
+                        allCorrect = false;
+                        errors.push(`Køn: "${correctGender}"`);
+                    }
+
+                    // Check plural
+                    const pluralInput = (inflectionInputs.plural || '').toLowerCase().trim();
+                    const correctPlural = word.inflections.plural.toLowerCase();
+                    if (pluralInput !== correctPlural) {
+                        allCorrect = false;
+                        errors.push(`Flere: "${word.inflections.plural}"`);
+                    }
+
+                    // Check definite plural
+                    const definitePluralInput = (inflectionInputs.definitePlural || '').toLowerCase().trim();
+                    const correctDefinitePlural = word.inflections.definitePlural.toLowerCase();
+                    if (definitePluralInput !== correctDefinitePlural) {
+                        allCorrect = false;
+                        errors.push(`Alle: "${word.inflections.definitePlural}"`);
+                    }
                 } else if (word.class === "verbum") {
                     const required = ['nutid', 'datid', 'førdatid'];
                     required.forEach(key => {
@@ -364,9 +378,9 @@
 
             const getInflectionLabel = (key) => {
                 const labels = {
-                    plural: 'Flertal',
-                    definite: 'Bestemt form',
-                    definitePlural: 'Bestemt flertal',
+                    gender: 'Køn',
+                    plural: 'Flere',
+                    definitePlural: 'Alle',
                     nutid: 'Nutid',
                     datid: 'Datid',
                     førdatid: 'Førdatid',
@@ -409,8 +423,22 @@
                 const word = currentWord;
 
                 if (word.class === "substantiv") {
+                    const selectedGender = inflectionInputs.gender || '';
                     return (
                         <div className="space-y-6">
+                            <div className="flex items-center gap-3">
+                                <select
+                                    value={selectedGender}
+                                    onChange={(e) => handleInflectionInput('gender', e.target.value)}
+                                    className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white"
+                                >
+                                    <option value="">vælg...</option>
+                                    <option value="en">en</option>
+                                    <option value="et">et</option>
+                                </select>
+                                <span className="text-gray-700 font-medium">{word.word}</span>
+                                <span className="text-gray-500">({selectedGender || 'en/et'})</span>
+                            </div>
                             <div className="flex items-center gap-3">
                                 <span className="text-gray-700">flere</span>
                                 <input
@@ -421,16 +449,7 @@
                                 />
                             </div>
                             <div className="flex items-center gap-3">
-                                <span className="text-gray-700">bestemt ental:</span>
-                                <input
-                                    type="text"
-                                    value={inflectionInputs.definite || ''}
-                                    onChange={(e) => handleInflectionInput('definite', e.target.value)}
-                                    className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                                />
-                            </div>
-                            <div className="flex items-center gap-3">
-                                <span className="text-gray-700">bestemt flertal:</span>
+                                <span className="text-gray-700">alle</span>
                                 <input
                                     type="text"
                                     value={inflectionInputs.definitePlural || ''}
