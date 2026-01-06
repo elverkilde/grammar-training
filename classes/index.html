@@ -46,7 +46,8 @@
             const [inflectionInputs, setInflectionInputs] = useState({});
             const [completedWords, setCompletedWords] = useState(new Set());
 
-            const words = [
+            const allWords = [
+                // Substantiver (nouns) - 27 total
                 {
                     word: "hus",
                     class: "substantiv",
@@ -56,25 +57,6 @@
                         plural: "huse",
                         definite: "huset",
                         definitePlural: "husene"
-                    }
-                },
-                {
-                    word: "løbe",
-                    class: "verbum",
-                    inflections: {
-                        infinitiv: "løbe",
-                        nutid: "løber",
-                        datid: "løb",
-                        førdatid: "løbet"
-                    }
-                },
-                {
-                    word: "smuk",
-                    class: "adjektiv",
-                    inflections: {
-                        positiv: "smuk",
-                        komparativ: "smukkere",
-                        superlativ: "smukkest"
                     }
                 },
                 {
@@ -89,25 +71,6 @@
                     }
                 },
                 {
-                    word: "spise",
-                    class: "verbum",
-                    inflections: {
-                        infinitiv: "spise",
-                        nutid: "spiser",
-                        datid: "spiste",
-                        førdatid: "spist"
-                    }
-                },
-                {
-                    word: "hurtig",
-                    class: "adjektiv",
-                    inflections: {
-                        positiv: "hurtig",
-                        komparativ: "hurtigere",
-                        superlativ: "hurtigst"
-                    }
-                },
-                {
                     word: "barn",
                     class: "substantiv",
                     gender: "et-ord",
@@ -116,25 +79,6 @@
                         plural: "børn",
                         definite: "barnet",
                         definitePlural: "børnene"
-                    }
-                },
-                {
-                    word: "tænke",
-                    class: "verbum",
-                    inflections: {
-                        infinitiv: "tænke",
-                        nutid: "tænker",
-                        datid: "tænkte",
-                        førdatid: "tænkt"
-                    }
-                },
-                {
-                    word: "stor",
-                    class: "adjektiv",
-                    inflections: {
-                        positiv: "stor",
-                        komparativ: "større",
-                        superlativ: "størst"
                     }
                 },
                 {
@@ -149,44 +93,6 @@
                     }
                 },
                 {
-                    word: "synge",
-                    class: "verbum",
-                    inflections: {
-                        infinitiv: "synge",
-                        nutid: "synger",
-                        datid: "sang",
-                        førdatid: "sunget"
-                    }
-                },
-                {
-                    word: "glad",
-                    class: "adjektiv",
-                    inflections: {
-                        positiv: "glad",
-                        komparativ: "gladere",
-                        superlativ: "gladest"
-                    }
-                },
-                {
-                    word: "skrive",
-                    class: "verbum",
-                    inflections: {
-                        infinitiv: "skrive",
-                        nutid: "skriver",
-                        datid: "skrev",
-                        førdatid: "skrevet"
-                    }
-                },
-                {
-                    word: "gammel",
-                    class: "adjektiv",
-                    inflections: {
-                        positiv: "gammel",
-                        komparativ: "ældre",
-                        superlativ: "ældst"
-                    }
-                },
-                {
                     word: "bord",
                     class: "substantiv",
                     gender: "et-ord",
@@ -195,25 +101,6 @@
                         plural: "borde",
                         definite: "bordet",
                         definitePlural: "bordene"
-                    }
-                },
-                {
-                    word: "finde",
-                    class: "verbum",
-                    inflections: {
-                        infinitiv: "finde",
-                        nutid: "finder",
-                        datid: "fandt",
-                        førdatid: "fundet"
-                    }
-                },
-                {
-                    word: "god",
-                    class: "adjektiv",
-                    inflections: {
-                        positiv: "god",
-                        komparativ: "bedre",
-                        superlativ: "bedst"
                     }
                 },
                 {
@@ -228,6 +115,299 @@
                     }
                 },
                 {
+                    word: "blomst",
+                    class: "substantiv",
+                    gender: "en-ord",
+                    inflections: {
+                        singular: "blomst",
+                        plural: "blomster",
+                        definite: "blomsten",
+                        definitePlural: "blomsterne"
+                    }
+                },
+                {
+                    word: "bil",
+                    class: "substantiv",
+                    gender: "en-ord",
+                    inflections: {
+                        singular: "bil",
+                        plural: "biler",
+                        definite: "bilen",
+                        definitePlural: "bilerne"
+                    }
+                },
+                {
+                    word: "træ",
+                    class: "substantiv",
+                    gender: "et-ord",
+                    inflections: {
+                        singular: "træ",
+                        plural: "træer",
+                        definite: "træet",
+                        definitePlural: "træerne"
+                    }
+                },
+                {
+                    word: "hund",
+                    class: "substantiv",
+                    gender: "en-ord",
+                    inflections: {
+                        singular: "hund",
+                        plural: "hunde",
+                        definite: "hunden",
+                        definitePlural: "hundene"
+                    }
+                },
+                {
+                    word: "sko",
+                    class: "substantiv",
+                    gender: "en-ord",
+                    inflections: {
+                        singular: "sko",
+                        plural: "sko",
+                        definite: "skoen",
+                        definitePlural: "skoene"
+                    }
+                },
+                {
+                    word: "æble",
+                    class: "substantiv",
+                    gender: "et-ord",
+                    inflections: {
+                        singular: "æble",
+                        plural: "æbler",
+                        definite: "æblet",
+                        definitePlural: "æblerne"
+                    }
+                },
+                {
+                    word: "dreng",
+                    class: "substantiv",
+                    gender: "en-ord",
+                    inflections: {
+                        singular: "dreng",
+                        plural: "drenge",
+                        definite: "drengen",
+                        definitePlural: "drengene"
+                    }
+                },
+                {
+                    word: "køkken",
+                    class: "substantiv",
+                    gender: "et-ord",
+                    inflections: {
+                        singular: "køkken",
+                        plural: "køkkener",
+                        definite: "køkkenet",
+                        definitePlural: "køkkenerne"
+                    }
+                },
+                {
+                    word: "stol",
+                    class: "substantiv",
+                    gender: "en-ord",
+                    inflections: {
+                        singular: "stol",
+                        plural: "stole",
+                        definite: "stolen",
+                        definitePlural: "stolene"
+                    }
+                },
+                {
+                    word: "vindue",
+                    class: "substantiv",
+                    gender: "et-ord",
+                    inflections: {
+                        singular: "vindue",
+                        plural: "vinduer",
+                        definite: "vinduet",
+                        definitePlural: "vinduerne"
+                    }
+                },
+                {
+                    word: "dag",
+                    class: "substantiv",
+                    gender: "en-ord",
+                    inflections: {
+                        singular: "dag",
+                        plural: "dage",
+                        definite: "dagen",
+                        definitePlural: "dagene"
+                    }
+                },
+                {
+                    word: "musik",
+                    class: "substantiv",
+                    gender: "en-ord",
+                    inflections: {
+                        singular: "musik",
+                        plural: "musikker",
+                        definite: "musikken",
+                        definitePlural: "musikkerne"
+                    }
+                },
+                {
+                    word: "hav",
+                    class: "substantiv",
+                    gender: "et-ord",
+                    inflections: {
+                        singular: "hav",
+                        plural: "have",
+                        definite: "havet",
+                        definitePlural: "havene"
+                    }
+                },
+                {
+                    word: "finger",
+                    class: "substantiv",
+                    gender: "en-ord",
+                    inflections: {
+                        singular: "finger",
+                        plural: "fingre",
+                        definite: "fingeren",
+                        definitePlural: "fingrene"
+                    }
+                },
+                {
+                    word: "lys",
+                    class: "substantiv",
+                    gender: "et-ord",
+                    inflections: {
+                        singular: "lys",
+                        plural: "lys",
+                        definite: "lyset",
+                        definitePlural: "lysene"
+                    }
+                },
+                {
+                    word: "vej",
+                    class: "substantiv",
+                    gender: "en-ord",
+                    inflections: {
+                        singular: "vej",
+                        plural: "veje",
+                        definite: "vejen",
+                        definitePlural: "vejene"
+                    }
+                },
+                {
+                    word: "hjerte",
+                    class: "substantiv",
+                    gender: "et-ord",
+                    inflections: {
+                        singular: "hjerte",
+                        plural: "hjerter",
+                        definite: "hjertet",
+                        definitePlural: "hjerterne"
+                    }
+                },
+                {
+                    word: "ven",
+                    class: "substantiv",
+                    gender: "en-ord",
+                    inflections: {
+                        singular: "ven",
+                        plural: "venner",
+                        definite: "vennen",
+                        definitePlural: "vennerne"
+                    }
+                },
+                {
+                    word: "brød",
+                    class: "substantiv",
+                    gender: "et-ord",
+                    inflections: {
+                        singular: "brød",
+                        plural: "brød",
+                        definite: "brødet",
+                        definitePlural: "brødene"
+                    }
+                },
+                {
+                    word: "time",
+                    class: "substantiv",
+                    gender: "en-ord",
+                    inflections: {
+                        singular: "time",
+                        plural: "timer",
+                        definite: "timen",
+                        definitePlural: "timerne"
+                    }
+                },
+                {
+                    word: "brev",
+                    class: "substantiv",
+                    gender: "et-ord",
+                    inflections: {
+                        singular: "brev",
+                        plural: "breve",
+                        definite: "brevet",
+                        definitePlural: "brevene"
+                    }
+                },
+
+                // Verber (verbs) - 27 total
+                {
+                    word: "løbe",
+                    class: "verbum",
+                    inflections: {
+                        infinitiv: "løbe",
+                        nutid: "løber",
+                        datid: "løb",
+                        førdatid: "løbet"
+                    }
+                },
+                {
+                    word: "spise",
+                    class: "verbum",
+                    inflections: {
+                        infinitiv: "spise",
+                        nutid: "spiser",
+                        datid: "spiste",
+                        førdatid: "spist"
+                    }
+                },
+                {
+                    word: "tænke",
+                    class: "verbum",
+                    inflections: {
+                        infinitiv: "tænke",
+                        nutid: "tænker",
+                        datid: "tænkte",
+                        førdatid: "tænkt"
+                    }
+                },
+                {
+                    word: "synge",
+                    class: "verbum",
+                    inflections: {
+                        infinitiv: "synge",
+                        nutid: "synger",
+                        datid: "sang",
+                        førdatid: "sunget"
+                    }
+                },
+                {
+                    word: "skrive",
+                    class: "verbum",
+                    inflections: {
+                        infinitiv: "skrive",
+                        nutid: "skriver",
+                        datid: "skrev",
+                        førdatid: "skrevet"
+                    }
+                },
+                {
+                    word: "finde",
+                    class: "verbum",
+                    inflections: {
+                        infinitiv: "finde",
+                        nutid: "finder",
+                        datid: "fandt",
+                        førdatid: "fundet"
+                    }
+                },
+                {
                     word: "give",
                     class: "verbum",
                     inflections: {
@@ -235,15 +415,6 @@
                         nutid: "giver",
                         datid: "gav",
                         førdatid: "givet"
-                    }
-                },
-                {
-                    word: "lille",
-                    class: "adjektiv",
-                    inflections: {
-                        positiv: "lille",
-                        komparativ: "mindre",
-                        superlativ: "mindst"
                     }
                 },
                 {
@@ -257,17 +428,449 @@
                     }
                 },
                 {
-                    word: "blomst",
-                    class: "substantiv",
-                    gender: "en-ord",
+                    word: "se",
+                    class: "verbum",
                     inflections: {
-                        singular: "blomst",
-                        plural: "blomster",
-                        definite: "blomsten",
-                        definitePlural: "blomsterne"
+                        infinitiv: "se",
+                        nutid: "ser",
+                        datid: "så",
+                        førdatid: "set"
+                    }
+                },
+                {
+                    word: "høre",
+                    class: "verbum",
+                    inflections: {
+                        infinitiv: "høre",
+                        nutid: "hører",
+                        datid: "hørte",
+                        førdatid: "hørt"
+                    }
+                },
+                {
+                    word: "lave",
+                    class: "verbum",
+                    inflections: {
+                        infinitiv: "lave",
+                        nutid: "laver",
+                        datid: "lavede",
+                        førdatid: "lavet"
+                    }
+                },
+                {
+                    word: "tage",
+                    class: "verbum",
+                    inflections: {
+                        infinitiv: "tage",
+                        nutid: "tager",
+                        datid: "tog",
+                        førdatid: "taget"
+                    }
+                },
+                {
+                    word: "komme",
+                    class: "verbum",
+                    inflections: {
+                        infinitiv: "komme",
+                        nutid: "kommer",
+                        datid: "kom",
+                        førdatid: "kommet"
+                    }
+                },
+                {
+                    word: "gå",
+                    class: "verbum",
+                    inflections: {
+                        infinitiv: "gå",
+                        nutid: "går",
+                        datid: "gik",
+                        førdatid: "gået"
+                    }
+                },
+                {
+                    word: "sige",
+                    class: "verbum",
+                    inflections: {
+                        infinitiv: "sige",
+                        nutid: "siger",
+                        datid: "sagde",
+                        førdatid: "sagt"
+                    }
+                },
+                {
+                    word: "vide",
+                    class: "verbum",
+                    inflections: {
+                        infinitiv: "vide",
+                        nutid: "ved",
+                        datid: "vidste",
+                        førdatid: "vidst"
+                    }
+                },
+                {
+                    word: "læse",
+                    class: "verbum",
+                    inflections: {
+                        infinitiv: "læse",
+                        nutid: "læser",
+                        datid: "læste",
+                        førdatid: "læst"
+                    }
+                },
+                {
+                    word: "tale",
+                    class: "verbum",
+                    inflections: {
+                        infinitiv: "tale",
+                        nutid: "taler",
+                        datid: "talte",
+                        førdatid: "talt"
+                    }
+                },
+                {
+                    word: "stå",
+                    class: "verbum",
+                    inflections: {
+                        infinitiv: "stå",
+                        nutid: "står",
+                        datid: "stod",
+                        førdatid: "stået"
+                    }
+                },
+                {
+                    word: "blive",
+                    class: "verbum",
+                    inflections: {
+                        infinitiv: "blive",
+                        nutid: "bliver",
+                        datid: "blev",
+                        førdatid: "blevet"
+                    }
+                },
+                {
+                    word: "kunne",
+                    class: "verbum",
+                    inflections: {
+                        infinitiv: "kunne",
+                        nutid: "kan",
+                        datid: "kunne",
+                        førdatid: "kunnet"
+                    }
+                },
+                {
+                    word: "kaste",
+                    class: "verbum",
+                    inflections: {
+                        infinitiv: "kaste",
+                        nutid: "kaster",
+                        datid: "kastede",
+                        førdatid: "kastet"
+                    }
+                },
+                {
+                    word: "hjælpe",
+                    class: "verbum",
+                    inflections: {
+                        infinitiv: "hjælpe",
+                        nutid: "hjælper",
+                        datid: "hjalp",
+                        førdatid: "hjulpet"
+                    }
+                },
+                {
+                    word: "lære",
+                    class: "verbum",
+                    inflections: {
+                        infinitiv: "lære",
+                        nutid: "lærer",
+                        datid: "lærte",
+                        førdatid: "lært"
+                    }
+                },
+                {
+                    word: "åbne",
+                    class: "verbum",
+                    inflections: {
+                        infinitiv: "åbne",
+                        nutid: "åbner",
+                        datid: "åbnede",
+                        førdatid: "åbnet"
+                    }
+                },
+                {
+                    word: "lukke",
+                    class: "verbum",
+                    inflections: {
+                        infinitiv: "lukke",
+                        nutid: "lukker",
+                        datid: "lukkede",
+                        førdatid: "lukket"
+                    }
+                },
+                {
+                    word: "elske",
+                    class: "verbum",
+                    inflections: {
+                        infinitiv: "elske",
+                        nutid: "elsker",
+                        datid: "elskede",
+                        førdatid: "elsket"
+                    }
+                },
+
+                // Adjektiver (adjectives) - 27 total
+                {
+                    word: "smuk",
+                    class: "adjektiv",
+                    inflections: {
+                        positiv: "smuk",
+                        komparativ: "smukkere",
+                        superlativ: "smukkest"
+                    }
+                },
+                {
+                    word: "hurtig",
+                    class: "adjektiv",
+                    inflections: {
+                        positiv: "hurtig",
+                        komparativ: "hurtigere",
+                        superlativ: "hurtigst"
+                    }
+                },
+                {
+                    word: "stor",
+                    class: "adjektiv",
+                    inflections: {
+                        positiv: "stor",
+                        komparativ: "større",
+                        superlativ: "størst"
+                    }
+                },
+                {
+                    word: "glad",
+                    class: "adjektiv",
+                    inflections: {
+                        positiv: "glad",
+                        komparativ: "gladere",
+                        superlativ: "gladest"
+                    }
+                },
+                {
+                    word: "gammel",
+                    class: "adjektiv",
+                    inflections: {
+                        positiv: "gammel",
+                        komparativ: "ældre",
+                        superlativ: "ældst"
+                    }
+                },
+                {
+                    word: "god",
+                    class: "adjektiv",
+                    inflections: {
+                        positiv: "god",
+                        komparativ: "bedre",
+                        superlativ: "bedst"
+                    }
+                },
+                {
+                    word: "lille",
+                    class: "adjektiv",
+                    inflections: {
+                        positiv: "lille",
+                        komparativ: "mindre",
+                        superlativ: "mindst"
+                    }
+                },
+                {
+                    word: "ny",
+                    class: "adjektiv",
+                    inflections: {
+                        positiv: "ny",
+                        komparativ: "nyere",
+                        superlativ: "nyest"
+                    }
+                },
+                {
+                    word: "lang",
+                    class: "adjektiv",
+                    inflections: {
+                        positiv: "lang",
+                        komparativ: "længere",
+                        superlativ: "længst"
+                    }
+                },
+                {
+                    word: "kort",
+                    class: "adjektiv",
+                    inflections: {
+                        positiv: "kort",
+                        komparativ: "kortere",
+                        superlativ: "kortest"
+                    }
+                },
+                {
+                    word: "høj",
+                    class: "adjektiv",
+                    inflections: {
+                        positiv: "høj",
+                        komparativ: "højere",
+                        superlativ: "højest"
+                    }
+                },
+                {
+                    word: "lav",
+                    class: "adjektiv",
+                    inflections: {
+                        positiv: "lav",
+                        komparativ: "lavere",
+                        superlativ: "lavest"
+                    }
+                },
+                {
+                    word: "varm",
+                    class: "adjektiv",
+                    inflections: {
+                        positiv: "varm",
+                        komparativ: "varmere",
+                        superlativ: "varmest"
+                    }
+                },
+                {
+                    word: "kold",
+                    class: "adjektiv",
+                    inflections: {
+                        positiv: "kold",
+                        komparativ: "koldere",
+                        superlativ: "koldest"
+                    }
+                },
+                {
+                    word: "nem",
+                    class: "adjektiv",
+                    inflections: {
+                        positiv: "nem",
+                        komparativ: "nemmere",
+                        superlativ: "nemmest"
+                    }
+                },
+                {
+                    word: "svær",
+                    class: "adjektiv",
+                    inflections: {
+                        positiv: "svær",
+                        komparativ: "sværere",
+                        superlativ: "sværest"
+                    }
+                },
+                {
+                    word: "ung",
+                    class: "adjektiv",
+                    inflections: {
+                        positiv: "ung",
+                        komparativ: "yngre",
+                        superlativ: "yngst"
+                    }
+                },
+                {
+                    word: "mørk",
+                    class: "adjektiv",
+                    inflections: {
+                        positiv: "mørk",
+                        komparativ: "mørkere",
+                        superlativ: "mørkest"
+                    }
+                },
+                {
+                    word: "lys",
+                    class: "adjektiv",
+                    inflections: {
+                        positiv: "lys",
+                        komparativ: "lysere",
+                        superlativ: "lysest"
+                    }
+                },
+                {
+                    word: "fed",
+                    class: "adjektiv",
+                    inflections: {
+                        positiv: "fed",
+                        komparativ: "federe",
+                        superlativ: "fedest"
+                    }
+                },
+                {
+                    word: "tynd",
+                    class: "adjektiv",
+                    inflections: {
+                        positiv: "tynd",
+                        komparativ: "tyndere",
+                        superlativ: "tyndest"
+                    }
+                },
+                {
+                    word: "stærk",
+                    class: "adjektiv",
+                    inflections: {
+                        positiv: "stærk",
+                        komparativ: "stærkere",
+                        superlativ: "stærkest"
+                    }
+                },
+                {
+                    word: "svag",
+                    class: "adjektiv",
+                    inflections: {
+                        positiv: "svag",
+                        komparativ: "svagere",
+                        superlativ: "svagest"
+                    }
+                },
+                {
+                    word: "rig",
+                    class: "adjektiv",
+                    inflections: {
+                        positiv: "rig",
+                        komparativ: "rigere",
+                        superlativ: "rigest"
+                    }
+                },
+                {
+                    word: "fattig",
+                    class: "adjektiv",
+                    inflections: {
+                        positiv: "fattig",
+                        komparativ: "fattigere",
+                        superlativ: "fattigst"
+                    }
+                },
+                {
+                    word: "sikker",
+                    class: "adjektiv",
+                    inflections: {
+                        positiv: "sikker",
+                        komparativ: "sikrere",
+                        superlativ: "sikrest"
+                    }
+                },
+                {
+                    word: "farlig",
+                    class: "adjektiv",
+                    inflections: {
+                        positiv: "farlig",
+                        komparativ: "farligere",
+                        superlativ: "farligst"
                     }
                 }
             ];
+
+            // Function to shuffle and select random words
+            const getRandomWords = (arr, count) => {
+                const shuffled = [...arr].sort(() => Math.random() - 0.5);
+                return shuffled.slice(0, count);
+            };
+
+            const [words, setWords] = useState(() => getRandomWords(allWords, 12));
 
             const wordClasses = [
                 { id: "substantiv", label: "Substantiv (navneord)" },
@@ -402,6 +1005,7 @@
             };
 
             const reset = () => {
+                setWords(getRandomWords(allWords, 12));
                 setCurrentWordIndex(0);
                 setStage('classify');
                 setScore(0);
