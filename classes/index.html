@@ -1580,7 +1580,12 @@
                                     <option value="et">et</option>
                                 </select>
                                 <span className="text-gray-700 font-medium">{word.word}</span>
-                                <span className="text-gray-500">({selectedGender || 'en/et'})</span>
+                                {selectedGender && (
+                                    <>
+                                        <span className="text-gray-500 mx-2">/</span>
+                                        <span className="text-gray-700 font-medium">{word.word}{selectedGender}</span>
+                                    </>
+                                )}
                             </div>
                             <div className="flex items-center gap-3">
                                 <span className="text-gray-700">flere</span>
