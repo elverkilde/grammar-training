@@ -657,55 +657,50 @@
                     word: "mad",
                     class: "substantiv",
                     gender: "en-ord",
+                    countable: false,
                     inflections: {
                         singular: "mad",
-                        plural: "mad",
-                        definite: "maden",
-                        definitePlural: "madene"
+                        definite: "maden"
                     }
                 },
                 {
                     word: "vand",
                     class: "substantiv",
                     gender: "et-ord",
+                    countable: false,
                     inflections: {
                         singular: "vand",
-                        plural: "vand",
-                        definite: "vandet",
-                        definitePlural: "vandene"
+                        definite: "vandet"
                     }
                 },
                 {
                     word: "mælk",
                     class: "substantiv",
                     gender: "en-ord",
+                    countable: false,
                     inflections: {
                         singular: "mælk",
-                        plural: "mælk",
-                        definite: "mælken",
-                        definitePlural: "mælkene"
+                        definite: "mælken"
                     }
                 },
                 {
                     word: "kaffe",
                     class: "substantiv",
                     gender: "en-ord",
+                    countable: false,
                     inflections: {
                         singular: "kaffe",
-                        plural: "kaffer",
-                        definite: "kaffen",
-                        definitePlural: "kafferne"
+                        definite: "kaffen"
                     }
                 },
                 {
                     word: "te",
                     class: "substantiv",
                     gender: "en-ord",
+                    countable: false,
                     inflections: {
                         singular: "te",
-                        plural: "teer",
-                        definite: "teen",
-                        definitePlural: "teerne"
+                        definite: "teen"
                     }
                 },
                 {
@@ -1958,20 +1953,24 @@
                         errors.push(`Køn: "${correctGender}"`);
                     }
 
-                    // Check plural
-                    const pluralInput = (inflectionInputs.plural || '').toLowerCase().trim();
-                    const correctPlural = word.inflections.plural.toLowerCase();
-                    if (pluralInput !== correctPlural) {
-                        allCorrect = false;
-                        errors.push(`Flere: "${word.inflections.plural}"`);
-                    }
+                    // Only check plural forms for countable nouns
+                    const isCountable = word.countable !== false;
+                    if (isCountable) {
+                        // Check plural
+                        const pluralInput = (inflectionInputs.plural || '').toLowerCase().trim();
+                        const correctPlural = word.inflections.plural.toLowerCase();
+                        if (pluralInput !== correctPlural) {
+                            allCorrect = false;
+                            errors.push(`Flere: "${word.inflections.plural}"`);
+                        }
 
-                    // Check definite plural
-                    const definitePluralInput = (inflectionInputs.definitePlural || '').toLowerCase().trim();
-                    const correctDefinitePlural = word.inflections.definitePlural.toLowerCase();
-                    if (definitePluralInput !== correctDefinitePlural) {
-                        allCorrect = false;
-                        errors.push(`Alle: "${word.inflections.definitePlural}"`);
+                        // Check definite plural
+                        const definitePluralInput = (inflectionInputs.definitePlural || '').toLowerCase().trim();
+                        const correctDefinitePlural = word.inflections.definitePlural.toLowerCase();
+                        if (definitePluralInput !== correctDefinitePlural) {
+                            allCorrect = false;
+                            errors.push(`Alle: "${word.inflections.definitePlural}"`);
+                        }
                     }
                 } else if (word.class === "verbum") {
                     const required = ['nutid', 'datid', 'førdatid'];
@@ -2057,6 +2056,8 @@
 
                 if (word.class === "substantiv") {
                     const selectedGender = inflectionInputs.gender || '';
+                    const isCountable = word.countable !== false;
+
                     return (
                         <div className="space-y-6">
                             <div className="flex items-center gap-3">
@@ -2077,24 +2078,32 @@
                                     </>
                                 )}
                             </div>
-                            <div className="flex items-center gap-3">
-                                <span className="text-gray-700">flere</span>
-                                <input
-                                    type="text"
-                                    value={inflectionInputs.plural || ''}
-                                    onChange={(e) => handleInflectionInput('plural', e.target.value)}
-                                    className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                                />
-                            </div>
-                            <div className="flex items-center gap-3">
-                                <span className="text-gray-700">alle</span>
-                                <input
-                                    type="text"
-                                    value={inflectionInputs.definitePlural || ''}
-                                    onChange={(e) => handleInflectionInput('definitePlural', e.target.value)}
-                                    className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                                />
-                            </div>
+                            {isCountable ? (
+                                <>
+                                    <div className="flex items-center gap-3">
+                                        <span className="text-gray-700">flere</span>
+                                        <input
+                                            type="text"
+                                            value={inflectionInputs.plural || ''}
+                                            onChange={(e) => handleInflectionInput('plural', e.target.value)}
+                                            className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                        />
+                                    </div>
+                                    <div className="flex items-center gap-3">
+                                        <span className="text-gray-700">alle</span>
+                                        <input
+                                            type="text"
+                                            value={inflectionInputs.definitePlural || ''}
+                                            onChange={(e) => handleInflectionInput('definitePlural', e.target.value)}
+                                            className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                        />
+                                    </div>
+                                </>
+                            ) : (
+                                <div className="p-4 bg-gray-50 border border-gray-200 rounded-lg">
+                                    <p className="text-gray-600 italic">Dette ord har ikke flertal</p>
+                                </div>
+                            )}
                         </div>
                     );
                 } else if (word.class === "verbum") {
