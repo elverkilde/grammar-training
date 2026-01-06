@@ -1644,26 +1644,23 @@
                     return (
                         <div className="space-y-6">
                             <div className="flex items-center gap-3">
-                                <span className="text-gray-700">{word.inflections.positiv}</span>
-                                <span className="text-gray-700 mx-2">→</span>
+                                <span className="text-gray-700">hun er</span>
                                 <input
                                     type="text"
                                     value={inflectionInputs.komparativ || ''}
                                     onChange={(e) => handleInflectionInput('komparativ', e.target.value)}
                                     className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                                 />
-                                <span className="text-gray-700">(mere)</span>
+                                <span className="text-gray-700">end ham</span>
                             </div>
                             <div className="flex items-center gap-3">
-                                <span className="text-gray-700">{word.inflections.positiv}</span>
-                                <span className="text-gray-700 mx-2">→</span>
+                                <span className="text-gray-700">han er den</span>
                                 <input
                                     type="text"
                                     value={inflectionInputs.superlativ || ''}
                                     onChange={(e) => handleInflectionInput('superlativ', e.target.value)}
                                     className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                                 />
-                                <span className="text-gray-700">(mest)</span>
                             </div>
                         </div>
                     );
